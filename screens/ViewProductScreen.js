@@ -1,24 +1,78 @@
-import React from "react";
-import { View, Text, TextInput, StyleSheet } from "react-native";
+import React, { useEffect, useState } from 'react';
+import { Alert, View, Text, FlatList, StyleSheet } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function ViewProductScreen() {
+  const [productos, setProductos] = useState([]);
+
+  const getToken = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      console.log("Token obtenido:", token); // Verificar que se obtiene el token
+      return token;
+    } catch (error) {
+      console.error("Error al obtener el token", error);
+      return null;
+    }
+  };
+
+  const fetchProductos = async () => {
+    try {
+      const token = await getToken();
+      if (!token) {
+        Alert.alert('Error', 'No se encontró el token');
+        return;
+      }
+
+      const response = await fetch('http://localhost:3000/user/getProductos', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'auth': token,
+        },
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        // Verifica si data.productos es un arreglo
+        if (Array.isArray(data.productos)) {
+          // Filtrar productos para excluir aquellos con estado "pendiente"
+          const productosFiltrados = data.productos.filter(producto => producto.estado !== 'pendiente');
+          setProductos(productosFiltrados);
+        } else {
+          console.error("La respuesta no contiene productos válidos", data);
+          Alert.alert('Error', 'No se encontraron productos válidos');
+        }
+      } else {
+        Alert.alert('Error', `Error: ${data.message}`);
+      }
+    } catch (error) {
+      Alert.alert('Error', `Error: ${error.message}`);
+    }
+  };
+
+  useEffect(() => {
+    fetchProductos();
+  }, []);
+
   return (
     <View style={styles.container}>
-      <TextInput style={styles.search} placeholder="Buscar producto..." />
-      <View style={styles.productsContainer}>
-        <View style={styles.product}>
-          <Text style={styles.productText}>Producto 1</Text>
-        </View>
-        <View style={styles.product}>
-          <Text style={styles.productText}>Producto 2</Text>
-        </View>
-        <View style={styles.product}>
-          <Text style={styles.productText}>Producto 3</Text>
-        </View>
-      </View>
-      <View style={styles.modifications}>
-        <Text style={styles.modificationsText}>Últimas Modificaciones</Text>
-      </View>
+      <Text style={styles.title}>Lista de Productos</Text>
+      {productos.length > 0 ? (
+        <FlatList
+          data={productos}
+          keyExtractor={(item) => item.id_p.toString()} // Asumiendo que id_p es la clave única
+          renderItem={({ item }) => (
+            <View style={styles.productItem}>
+              <Text>Nombre: {item.nombre_producto}</Text>
+              <Text>Precio: {item.precio}</Text>
+              <Text>Stock: {item.stock}</Text>
+            </View>
+          )}
+        />
+      ) : (
+        <Text>No hay productos disponibles.</Text>
+      )}
     </View>
   );
 }
@@ -27,35 +81,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#d3d3d3",
+    backgroundColor: '#fff',
   },
-  search: {
-    backgroundColor: "#fff",
-    borderRadius: 5,
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  productItem: {
     padding: 10,
-    marginBottom: 20,
-  },
-  productsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 20,
-  },
-  product: {
-    width: 100,
-    height: 100,
-    backgroundColor: "#000",
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 10,
-  },
-  productText: {
-    color: "white",
-  },
-  modifications: {
-    marginTop: 20,
-    alignItems: "center",
-  },
-  modificationsText: {
-    color: "#aaa",
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
   },
 });

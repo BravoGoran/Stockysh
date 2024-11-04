@@ -1,7 +1,33 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, Button, StyleSheet, Image } from "react-native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function HomeScreen({ navigation }) {
+  const [role, setRole] = useState(null);
+
+  // Obtén el rol del usuario desde AsyncStorage
+  useEffect(() => {
+    const fetchRole = async () => {
+      try {
+        const roleData = await AsyncStorage.getItem('userRole');
+        if (roleData) {
+          setRole(roleData);
+        } else {
+          console.log("No se encontró el rol en AsyncStorage.");
+        }
+      } catch (error) {
+        console.error("Error al obtener el rol desde AsyncStorage:", error);
+      }
+    };
+
+    fetchRole();
+  }, []);
+
+  // Para depuración, verifica el rol
+  useEffect(() => {
+    console.log("Rol del usuario:", role);
+  }, [role]);
+
   return (
     <View style={styles.container}>
       <Image source={require("../assets/logo.png")} style={styles.logo} />
@@ -17,6 +43,13 @@ export default function HomeScreen({ navigation }) {
           onPress={() => navigation.navigate("ViewProduct")}
           color="#555"
         />
+        {role === "admin" && (
+          <Button
+            title="Solicitudes"
+            onPress={() => navigation.navigate("AdminApprovalScreen")}
+            color="#555"
+          />
+        )}
         <Button title="Información" onPress={() => {}} color="#555" />
       </View>
     </View>
