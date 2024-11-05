@@ -1,25 +1,21 @@
-import * as React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
+import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from './screens/HomeScreen';
 import LoadProductScreen from './screens/LoadProductScreen';
 import ViewProductScreen from './screens/ViewProductScreen';
+import AdminApprovalScreen from './screens/AdminApprovalScreen';
 import AuthScreen from './screens/AuthScreen';
-import AdminApprovalScreen from './screens/AdminApprovalScreen'; // Asegúrate de importar la pantalla de aprobación
 
-const Stack = createNativeStackNavigator();
-
-
+const Stack = createStackNavigator();
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userRole, setUserRole] = useState(null); // Estado para el rol del usuario
 
-  const handleLogin = (role) => {
+  const handleLogin = (rol) => {
     setIsAuthenticated(true);
-    setUserRole(role); // Establece el rol del usuario
+    setUserRole(rol); // Establece el rol del usuario
   };
 
   return (
@@ -27,13 +23,13 @@ export default function App() {
       <Stack.Navigator>
         {isAuthenticated ? (
           <>
-           <Stack.Screen name="Home">
-  {(props) => <HomeScreen {...props} role={userRole} />}
-</Stack.Screen>
+            <Stack.Screen name="Home">
+              {(props) => <HomeScreen {...props} rol={userRole} />}
+            </Stack.Screen>
             <Stack.Screen name="LoadProduct" component={LoadProductScreen} />
             <Stack.Screen name="ViewProduct" component={ViewProductScreen} />
             {userRole === 'admin' && (
-              <Stack.Screen name="AdminApproval" component={AdminApprovalScreen} />
+              <Stack.Screen name="AdminApprovalScreen" component={AdminApprovalScreen} />
             )}
           </>
         ) : (
@@ -45,4 +41,3 @@ export default function App() {
     </NavigationContainer>
   );
 }
-

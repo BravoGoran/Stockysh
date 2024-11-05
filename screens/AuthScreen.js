@@ -23,9 +23,10 @@ export default function AuthScreen({ onLogin }) {
       if (data.success) {
         await AsyncStorage.setItem('token', data.token); // Guarda el token
         await AsyncStorage.setItem('dni', username); // Guarda el DNI actual
-        await AsyncStorage.setItem('role', data.role); // Guarda el rol del usuario
+        await AsyncStorage.setItem('userRole', data.rol); // Guarda el rol del usuario
         console.log("Token guardado:", data.token);
-        onLogin(data.role); // Cambia a la pantalla principal y pasa el rol
+        console.log("Rol guardado:", data.rol);
+        onLogin(data.rol); // Cambia a la pantalla principal y pasa el rol
       } else {
         alert(`Error: ${data.message}`);
       }
@@ -33,33 +34,42 @@ export default function AuthScreen({ onLogin }) {
       alert(`Error: ${error.message}`);
     }
   };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{isLogin ? 'Iniciar Sesión' : 'Registrarse'}</Text>
       <TextInput
-        style={styles.input}
         placeholder="DNI"
         value={username}
         onChangeText={setUsername}
+        style={styles.input}
       />
       <TextInput
-        style={styles.input}
         placeholder="Contraseña"
-        secureTextEntry
         value={password}
         onChangeText={setPassword}
+        secureTextEntry
+        style={styles.input}
       />
-      <Button title={isLogin ? 'Iniciar Sesión' : 'Registrarse'} onPress={handleAuth} />
-      <Text style={styles.toggleText} onPress={() => setIsLogin(!isLogin)}>
-        {isLogin ? '¿No tienes cuenta? Regístrate' : '¿Ya tienes cuenta? Inicia sesión'}
-      </Text>
+      <Button title={isLogin ? "Iniciar sesión" : "Registrarse"} onPress={handleAuth} />
+      <Button
+        title={`Cambiar a ${isLogin ? "Registro" : "Inicio de sesión"}`}
+        onPress={() => setIsLogin(!isLogin)}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', padding: 20, backgroundColor: '#f0f0f0' },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20, textAlign: 'center' },
-  input: { height: 40, borderColor: '#ccc', borderWidth: 1, marginBottom: 15, padding: 10, borderRadius: 5 },
-  toggleText: { marginTop: 20, color: 'blue', textAlign: 'center', textDecorationLine: 'underline' },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 16,
+  },
+  input: {
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingLeft: 8,
+  },
 });
