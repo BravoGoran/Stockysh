@@ -5,12 +5,14 @@ import { Ionicons } from '@expo/vector-icons';
 
 export default function HomeScreen({ navigation }) {
   const [rol, setRole] = useState(null);
-  const [dni, setDni] = useState(null);  // Cambié a null para mayor claridad
+  const [dni, setDni] = useState(null);
   const [nombre, setNombre] = useState('');
   const [email, setEmail] = useState('');
   const [contra, setContra] = useState('');
-  const [nuevoDni, setNuevoDni] = useState(''); 
+  const [nuevoDni, setNuevoDni] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredProducts, setFilteredProducts] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -18,27 +20,19 @@ export default function HomeScreen({ navigation }) {
         const rolData = await AsyncStorage.getItem('userRole');
         if (rolData !== null) {
           setRole(rolData);
-        } else {
-          console.log("No se encontró el rol en AsyncStorage.");
         }
 
-        // Verifica si el DNI está en AsyncStorage
         let dniData = await AsyncStorage.getItem('dni');
         if (dniData !== null) {
-          setDni(dniData);  // Guardamos el DNI directamente
+          setDni(dniData);
           
-          // Obtener el nombre y email desde AsyncStorage directamente, si están disponibles
           const storedNombre = await AsyncStorage.getItem('nombre');
           const storedEmail = await AsyncStorage.getItem('email');
 
           if (storedNombre && storedEmail) {
-            setNombre(storedNombre); // Asumiendo que el nombre está guardado en AsyncStorage
-            setEmail(storedEmail);   // Asumiendo que el email está guardado en AsyncStorage
-          } else {
-            console.log("Nombre o Email no encontrados en AsyncStorage.");
+            setNombre(storedNombre);
+            setEmail(storedEmail);
           }
-        } else {
-          console.log("No se encontró el DNI en AsyncStorage.");
         }
       } catch (error) {
         console.error("Error al obtener datos desde AsyncStorage:", error);
@@ -48,50 +42,77 @@ export default function HomeScreen({ navigation }) {
     fetchData();
   }, []);
 
+  const handleSearch = async () => {
+    try {
+      if (!searchQuery) {
+        alert('Por favor, ingrese un ID de producto para buscar.');
+        return;
+      }
+
+      const response = await fetch(`http://localhost:3000/user/getProductoById/${searchQuery}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'auth': await AsyncStorage.getItem('token'),
+        },
+      });
+
+      const data = await response.json();
+      
+      if (response.ok) {
+        console.log('Producto encontrado:', data.producto);
+        setFilteredProducts([data.producto]);
+      } else {
+        alert(data.message || 'Producto no encontrado.');
+        setFilteredProducts([]);
+      }
+    } catch (error) {
+      console.error('Error al buscar productos:', error);
+      alert('Hubo un error al buscar el producto.');
+      setFilteredProducts([]);
+    }
+  };
+
   const handleSaveChanges = async () => {
-    // Crear un objeto para los campos actualizados
     const updatedData = {};
-  
-    // Solo agregar los campos que han sido modificados
+
     if (nombre && nombre !== dni.nombre) {
       updatedData.nombre = nombre;
     }
-  
+
     if (email && email !== dni.email) {
       updatedData.email = email;
     }
-  
+
     if (contra && contra !== dni.contra) {
       updatedData.contra = contra;
     }
-  
-    if (nuevoDni && nuevoDni !== dni) {  // Verifica contra 'dni'
+
+    if (nuevoDni && nuevoDni !== dni) {
       updatedData.dni = nuevoDni;
     }
-  
-    // Si no hay cambios, no enviar nada
+
     if (Object.keys(updatedData).length === 0) {
       console.log("No se han realizado cambios.");
-      return; // Termina la función si no hay cambios
+      return;
     }
-  
+
     try {
       const token = await AsyncStorage.getItem('token');
       if (!token) {
         console.error("Token no encontrado");
         return;
       }
-  
-      // Realizar la solicitud PUT con los datos actualizados
-      const response = await fetch(`http://localhost:3000/user/modificarUsuario/${dni}`, {  
+
+      const response = await fetch(`http://localhost:3000/user/modificarUsuario/${dni}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'auth': token, // Enviar el token en los encabezados
+          'auth': token,
         },
-        body: JSON.stringify(updatedData), // Enviar solo los datos modificados
+        body: JSON.stringify(updatedData),
       });
-  
+
       if (response.ok) {
         const data = await response.json();
         console.log("Datos actualizados:", data);
@@ -103,27 +124,18 @@ export default function HomeScreen({ navigation }) {
       console.error("Error al guardar los cambios:", error);
     }
   };
+
   return (
     <View style={styles.container}>
       <Image source={require("../assets/logo.png")} style={styles.logo} />
       <Text style={styles.title}>STOCKYSH</Text>
+
       <View style={styles.buttonContainer}>
-        <Button
-          title="Cargar Productos"
-          onPress={() => navigation.navigate("LoadProduct")}
-          color="#555"
-        />
-        <Button
-          title="Visualizar Productos"
-          onPress={() => navigation.navigate("ViewProduct")}
-          color="#555"
-        />
+        <Button title="Cargar Productos" onPress={() => navigation.navigate("LoadProduct")} color="#555" />
+        <Button title="Visualizar Productos" onPress={() => navigation.navigate("ViewProduct")} color="#555" />
+        
         {rol === "admin" && (
-          <Button
-            title="Solicitudes"
-            onPress={() => navigation.navigate("AdminApprovalScreen")}
-            color="#555"
-          />
+          <Button title="Solicitudes" onPress={() => navigation.navigate("AdminApprovalScreen")} color="#555" />
         )}
         <Button title="Información" onPress={() => {}} color="#555" />
       </View>
@@ -145,33 +157,11 @@ export default function HomeScreen({ navigation }) {
         <View style={styles.modalContainer}>
           <View style={styles.modalView}>
             <Text style={styles.modalTitle}>Modificar Datos del Usuario</Text>
-            <TextInput
-              placeholder="Nombre"
-              value={nombre}
-              onChangeText={setNombre}
-              style={styles.input}
-            />
-            <TextInput
-              placeholder="Email"
-              value={email}
-              onChangeText={setEmail}
-              style={styles.input}
-              keyboardType="email-address"
-            />
-            <TextInput
-              placeholder="Contraseña"
-              value={contra}
-              onChangeText={setContra}
-              style={styles.input}
-              secureTextEntry
-            />
-            <TextInput
-              placeholder="Nuevo DNI"
-              value={nuevoDni}
-              onChangeText={setNuevoDni}
-              style={styles.input}
-              keyboardType="numeric"
-            />
+            <TextInput placeholder="Nombre" value={nombre} onChangeText={setNombre} style={styles.input} />
+            <TextInput placeholder="Email" value={email} onChangeText={setEmail} style={styles.input} keyboardType="email-address" />
+            <TextInput placeholder="Contraseña" value={contra} onChangeText={setContra} style={styles.input} secureTextEntry />
+            <TextInput placeholder="Nuevo DNI" value={nuevoDni} onChangeText={setNuevoDni} style={styles.input} keyboardType="numeric" />
+
             <View style={styles.buttonContainer}>
               <Button title="Guardar Cambios" onPress={handleSaveChanges} />
               <Button title="Cerrar" onPress={() => setModalVisible(false)} color="#f00" />
@@ -179,6 +169,37 @@ export default function HomeScreen({ navigation }) {
           </View>
         </View>
       </Modal>
+
+      {/* Barra de búsqueda */}
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Buscar producto..."
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          onSubmitEditing={handleSearch}
+        />
+        <Button title="Buscar" onPress={handleSearch} />
+      </View>
+
+      {/* Lista de productos filtrados */}
+      <View style={styles.productList}>
+        {filteredProducts.length > 0 ? (
+          filteredProducts.map((product, index) => (
+            <View key={index} style={styles.productItem}>
+              <Text>Nombre: {product.nombre_producto}</Text>
+              <Text>Precio: {product.precio}</Text>
+              <Text>Stock: {product.stock}</Text>
+              <Button
+                title="Editar Producto"
+                onPress={() => navigation.navigate("EditProductScreen", { product })}
+              />
+            </View>
+          ))
+        ) : (
+          <Text>No se encontraron productos.</Text>
+        )}
+      </View>
     </View>
   );
 }
@@ -233,9 +254,29 @@ const styles = StyleSheet.create({
   input: {
     width: '100%',
     height: 40,
-    borderColor: '#ccc',
+    borderColor: 'gray',
     borderWidth: 1,
     marginBottom: 15,
-    paddingHorizontal: 10,
+    paddingLeft: 10,
+  },
+  searchContainer: {
+    marginTop: 20,
+    alignItems: "center",
+  },
+  searchInput: {
+    width: "80%",
+    padding: 10,
+    borderColor: "gray",
+    borderWidth: 1,
+    marginBottom: 10,
+  },
+  productList: {
+    marginTop: 20,
+    width: "80%",
+  },
+  productItem: {
+    padding: 10,
+    borderBottomColor: "gray",
+    borderBottomWidth: 1,
   },
 });

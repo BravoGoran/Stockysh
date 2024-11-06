@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from './screens/HomeScreen';
 import LoadProductScreen from './screens/LoadProductScreen';
+import EditProductScreen from "./screens/EditProductScreen";
 import ViewProductScreen from './screens/ViewProductScreen';
 import AdminApprovalScreen from './screens/AdminApprovalScreen';
 import AuthScreen from './screens/AuthScreen';
@@ -26,6 +27,7 @@ export default function App() {
             <Stack.Screen name="Home">
               {(props) => <HomeScreen {...props} rol={userRole} />}
             </Stack.Screen>
+            <Stack.Screen name="EditProductScreen" component={EditProductScreen} />
             <Stack.Screen name="LoadProduct" component={LoadProductScreen} />
             <Stack.Screen name="ViewProduct" component={ViewProductScreen} />
             {userRole === 'admin' && (
