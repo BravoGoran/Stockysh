@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet,Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const API_URL = "http://localhost:3000"; // Cambia a tu URL de API real
+const API_URL = "http://back-stockysh.vercel.app"; // Cambia a tu URL de API real
 
 export default function LoadProductScreen() {
   const [id, setId] = useState('');
@@ -55,7 +55,7 @@ export default function LoadProductScreen() {
       };
       console.log("Cuerpo de la solicitud:", requestBody);
 
-      const response = await fetch('http://localhost:3000/user/createProducto', {
+      const response = await fetch('http://back-stockysh.vercel.app/user/createProducto', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

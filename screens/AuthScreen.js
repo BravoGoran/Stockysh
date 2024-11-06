@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native'; // Importa useNavigation
 
 export default function AuthScreen({ onLogin }) {
   const [nombre, setNombre] = useState(''); // Nombre del usuario
@@ -9,8 +10,10 @@ export default function AuthScreen({ onLogin }) {
   const [email, setEmail] = useState(''); // Email del usuario
   const [isLogin, setIsLogin] = useState(true);
 
+  const navigation = useNavigation(); // Usa useNavigation para acceder al objeto de navegación
+
   const handleAuth = async () => {
-    const endpoint = isLogin ? 'http://localhost:3000/user/login' : 'http://localhost:3000/user/usersp';
+    const endpoint = isLogin ? 'http://back-stockysh.vercel.app/user/login' : 'http://back-stockysh.vercel.app/user/usersp';
 
     try {
       const body = isLogin
@@ -30,11 +33,6 @@ export default function AuthScreen({ onLogin }) {
       if (data.success) {
         console.log("Token:", data.token); // Verifica el token recibido
         console.log("DNI:", dni); // Verifica el DNI antes de guardarlo
-        
-   
-       
-
-
 
         // Guardar los otros datos en AsyncStorage
         await AsyncStorage.setItem('token', data.token);
@@ -49,6 +47,9 @@ export default function AuthScreen({ onLogin }) {
 
         // Llamada a onLogin pasando el rol para gestionar la pantalla
         onLogin(data.rol); // Cambia a la pantalla principal
+
+        // Navegar a la pantalla Home después de un login exitoso
+        navigation.navigate('Home');
       } else {
         alert(`Error: ${data.message}`);
       }

@@ -33,7 +33,7 @@ export default function EditProductScreen({ route, navigation }) {
     try {
       const token = await AsyncStorage.getItem("token");
   
-      const response = await fetch(`http://localhost:3000/user/updateProducto/${product.id_p}`, {
+      const response = await fetch(`http://back-stockysh.vercel.app/user/updateProducto/${product.id_p}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -77,7 +77,7 @@ export default function EditProductScreen({ route, navigation }) {
 
       console.log("ID del producto:", id_p);
   
-      const response = await fetch(`http://localhost:3000/user/deleteProducto/${id_p}`, {
+      const response = await fetch(`http://back-stockysh.vercel.app/user/deleteProducto/${id_p}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

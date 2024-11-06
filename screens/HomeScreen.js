@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import { View, Text, Button, StyleSheet, Image, Modal, TextInput } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from "@react-navigation/native";
 
-export default function HomeScreen({ navigation }) {
+export default function HomeScreen() {
+  const navigation = useNavigation();
   const [rol, setRole] = useState(null);
   const [dni, setDni] = useState(null);
   const [nombre, setNombre] = useState('');
@@ -49,7 +51,7 @@ export default function HomeScreen({ navigation }) {
         return;
       }
 
-      const response = await fetch(`http://localhost:3000/user/getProductoById/${searchQuery}`, {
+      const response = await fetch(`http://back-stockysh.vercel.app/user/getProductoById/${searchQuery}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -104,7 +106,7 @@ export default function HomeScreen({ navigation }) {
         return;
       }
 
-      const response = await fetch(`http://localhost:3000/user/modificarUsuario/${dni}`, {
+      const response = await fetch(`http://back-stockysh.vercel.app/user/modificarUsuario/${dni}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -125,6 +127,13 @@ export default function HomeScreen({ navigation }) {
     }
   };
 
+  const handleLogout = async () => {
+    await AsyncStorage.removeItem('token');
+    navigation.navigate("Auth"); // Asegura la navegación a la pantalla de autenticación
+  };
+  
+  
+
   return (
     <View style={styles.container}>
       <Image source={require("../assets/logo.png")} style={styles.logo} />
@@ -139,6 +148,14 @@ export default function HomeScreen({ navigation }) {
         )}
         <Button title="Información" onPress={() => {}} color="#555" />
       </View>
+
+      <Ionicons
+        name="log-out-outline"
+        size={30}
+        color="black"
+        style={styles.logoutIcon}
+        onPress={handleLogout} // Añadir el evento de logout
+      />
 
       <Ionicons
         name="person"
@@ -224,6 +241,11 @@ const styles = StyleSheet.create({
     marginTop: 20,
     width: "80%",
   },
+  logoutIcon: {
+    position: "absolute",
+    top: 40,
+    left: 20,
+  },
   userIcon: {
     position: "absolute",
     top: 40,
@@ -261,14 +283,16 @@ const styles = StyleSheet.create({
   },
   searchContainer: {
     marginTop: 20,
+    width: "80%",
+    flexDirection: "row",
     alignItems: "center",
   },
   searchInput: {
-    width: "80%",
-    padding: 10,
+    flex: 1,
     borderColor: "gray",
     borderWidth: 1,
-    marginBottom: 10,
+    padding: 10,
+    marginRight: 10,
   },
   productList: {
     marginTop: 20,
@@ -276,7 +300,13 @@ const styles = StyleSheet.create({
   },
   productItem: {
     padding: 10,
-    borderBottomColor: "gray",
-    borderBottomWidth: 1,
+    marginBottom: 10,
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 3,
   },
 });

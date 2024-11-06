@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, Button, Alert, ActivityIndicator, FlatList } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const API_URL = "http://localhost:3000"; // Usa una variable de entorno en producción
+const API_URL = "http://back-stockysh.vercel.app"; // Usa una variable de entorno en producción
 
 export default function AdminApprovalScreen() {
   const [solicitudes, setSolicitudes] = useState([]);

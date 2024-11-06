@@ -24,7 +24,7 @@ export default function ViewProductScreen() {
         return;
       }
 
-      const response = await fetch('http://localhost:3000/user/getProductos', {
+      const response = await fetch('http://back-stockysh.vercel.app/user/getProductos', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
