@@ -65,6 +65,48 @@ export default function EditProductScreen({ route, navigation }) {
     }
   };
 
+  // Función para manejar la eliminación del producto
+  const handleDeleteProduct = async () => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+      const dni = await AsyncStorage.getItem("dni"); // Obtener el DNI del usuario
+
+      const id_p = product.id_p; // El ID del producto a eliminar
+
+      console.log("DNI:", dni);
+
+      console.log("ID del producto:", id_p);
+  
+      const response = await fetch(`http://localhost:3000/user/deleteProducto/${id_p}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "auth": token,  // Aquí asumimos que el token está correctamente configurado
+        },
+        body: JSON.stringify({
+          dni: dni,
+          id_p: id_p, // Enviamos también el id_p en el cuerpo
+        }),
+      });
+  
+      const data = await response.json();
+  
+      if (data.success) {
+        Alert.alert("Éxito", data.message);
+        // Redirigir o refrescar la pantalla después de eliminar el producto
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Home' }],
+        });
+      } else {
+        Alert.alert("Error", data.message);
+      }
+    } catch (error) {
+      console.error("Error al eliminar el producto:", error);
+      Alert.alert("Error", "Hubo un error al eliminar el producto.");
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Editar Producto</Text>
@@ -89,6 +131,7 @@ export default function EditProductScreen({ route, navigation }) {
         keyboardType="numeric"
       />
       <Button title="Guardar Cambios" onPress={handleSaveChanges} />
+      <Button title="Eliminar Producto" onPress={handleDeleteProduct} color="red" />
     </View>
   );
 }

@@ -11,12 +11,12 @@ export default function AuthScreen({ onLogin }) {
 
   const handleAuth = async () => {
     const endpoint = isLogin ? 'http://localhost:3000/user/login' : 'http://localhost:3000/user/usersp';
-  
+
     try {
       const body = isLogin
         ? { dni, contra: password }
         : { nombre, dni, contra: password, email }; // En el registro, incluimos todos los campos
-  
+
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
@@ -24,29 +24,29 @@ export default function AuthScreen({ onLogin }) {
         },
         body: JSON.stringify(body),
       });
-  
+
       const data = await response.json();
-      console.log("Respuesta del backend:", data); // Verifica la respuesta completa
-  
+
       if (data.success) {
         console.log("Token:", data.token); // Verifica el token recibido
         console.log("DNI:", dni); // Verifica el DNI antes de guardarlo
-  
-        // Verificar los campos 'nombre' y 'email' antes de guardarlos
-        console.log("Nombre recibido:", data.nombre);
-        console.log("Email recibido:", data.email);
-  
-        // Guardamos los datos directamente desde la respuesta del login
+        
+   
+       
+
+
+
+        // Guardar los otros datos en AsyncStorage
         await AsyncStorage.setItem('token', data.token);
         await AsyncStorage.setItem('dni', dni); // Guarda el DNI correctamente
-        await AsyncStorage.setItem('userRole', data.rol); // Guarda el rol
-        await AsyncStorage.setItem('nombre', data.nombre || ''); // Aseguramos que se guarda un valor
-        await AsyncStorage.setItem('email', data.email || ''); // Aseguramos que se guarda un valor
-  
+        await AsyncStorage.setItem('userRole', data.rol);
+        await AsyncStorage.setItem('nombre', data.nombre); // Guardamos el nombre
+        await AsyncStorage.setItem('email', data.email); // Guardamos el email
+
         console.log("DNI guardado en AsyncStorage:", dni); // Verifica que el DNI se guarda
         console.log("Nombre:", data.nombre); // Verifica el nombre recibido
         console.log("Email:", data.email); // Verifica el email recibido
-  
+
         // Llamada a onLogin pasando el rol para gestionar la pantalla
         onLogin(data.rol); // Cambia a la pantalla principal
       } else {
