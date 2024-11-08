@@ -15,6 +15,7 @@ export default function HomeScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredProducts, setFilteredProducts] = useState([]);
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -140,13 +141,25 @@ export default function HomeScreen() {
       <Text style={styles.title}>STOCKYSH</Text>
 
       <View style={styles.buttonContainer}>
-        <Button title="Cargar Productos" onPress={() => navigation.navigate("LoadProduct")} color="#555" />
-        <Button title="Visualizar Productos" onPress={() => navigation.navigate("ViewProduct")} color="#555" />
-        
+        <Button 
+          title="Cargar Productos" 
+          onPress={() => navigation.navigate("LoadProduct")} 
+          color="#4a90e2" 
+        />
+        <View style={styles.buttonSpacer} />
+        <Button 
+          title="Visualizar Productos" 
+          onPress={() => navigation.navigate("ViewProduct")} 
+          color="#4a90e2" 
+        />
+        <View style={styles.buttonSpacer} />
         {rol === "admin" && (
-          <Button title="Solicitudes" onPress={() => navigation.navigate("AdminApprovalScreen")} color="#555" />
+          <Button 
+            title="Solicitudes" 
+            onPress={() => navigation.navigate("AdminApprovalScreen")} 
+            color="#4a90e2" 
+          />
         )}
-        <Button title="Información" onPress={() => {}} color="#555" />
       </View>
 
       <Ionicons
@@ -154,7 +167,7 @@ export default function HomeScreen() {
         size={30}
         color="black"
         style={styles.logoutIcon}
-        onPress={handleLogout} // Añadir el evento de logout
+        onPress={handleLogout}
       />
 
       <Ionicons
@@ -179,15 +192,15 @@ export default function HomeScreen() {
             <TextInput placeholder="Contraseña" value={contra} onChangeText={setContra} style={styles.input} secureTextEntry />
             <TextInput placeholder="Nuevo DNI" value={nuevoDni} onChangeText={setNuevoDni} style={styles.input} keyboardType="numeric" />
 
-            <View style={styles.buttonContainer}>
-              <Button title="Guardar Cambios" onPress={handleSaveChanges} />
+            <View style={styles.modalButtonContainer}>
+              <Button title="Guardar Cambios" onPress={handleSaveChanges} color="#4a90e2" />
+              <View style={styles.buttonSpacer} />
               <Button title="Cerrar" onPress={() => setModalVisible(false)} color="#f00" />
             </View>
           </View>
         </View>
       </Modal>
 
-      {/* Barra de búsqueda */}
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
@@ -196,29 +209,29 @@ export default function HomeScreen() {
           onChangeText={setSearchQuery}
           onSubmitEditing={handleSearch}
         />
-        <Button title="Buscar" onPress={handleSearch} />
+        <Button title="Buscar" onPress={handleSearch} color="#4a90e2" />
       </View>
 
-      {/* Lista de productos filtrados */}
       <View style={styles.productList}>
         {filteredProducts.length > 0 ? (
           filteredProducts.map((product, index) => (
             <View key={index} style={styles.productItem}>
-              <Text>Nombre: {product.nombre_producto}</Text>
-              <Text>Precio: {product.precio}</Text>
-              <Text>Stock: {product.stock}</Text>
+              <Text style={styles.productText}>Nombre: {product.nombre_producto}</Text>
+              <Text style={styles.productText}>Precio: {product.precio}</Text>
+              <Text style={styles.productText}>Stock: {product.stock}</Text>
               <Button
                 title="Editar Producto"
                 onPress={() => navigation.navigate("EditProductScreen", { product })}
+                color="#4a90e2"
               />
             </View>
           ))
         ) : (
-          <Text>No se encontraron productos.</Text>
+          <Text style={styles.noProductsText}>No se encontraron productos.</Text>
         )}
       </View>
     </View>
-  );
+);
 }
 
 const styles = StyleSheet.create({
@@ -226,20 +239,25 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#d3d3d3",
+    backgroundColor: "#f2f2f2",
   },
   logo: {
-    width: 100,
-    height: 100,
+    width: 120,
+    height: 120,
   },
   title: {
-    fontSize: 48,
-    marginTop: 10,
-    fontFamily: "serif",
+    fontSize: 36,
+    fontWeight: "bold",
+    color: "#4a90e2",
+    marginVertical: 20,
   },
   buttonContainer: {
     marginTop: 20,
     width: "80%",
+    alignItems: "center",
+  },
+  buttonSpacer: {
+    height: 10,
   },
   logoutIcon: {
     position: "absolute",
@@ -259,9 +277,9 @@ const styles = StyleSheet.create({
   },
   modalView: {
     width: '80%',
-    backgroundColor: "white",
+    backgroundColor: "#fff",
     borderRadius: 20,
-    padding: 35,
+    padding: 25,
     alignItems: "center",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -271,6 +289,8 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 20,
+    fontWeight: "bold",
+    color: "#333",
     marginBottom: 15,
   },
   input: {
@@ -278,8 +298,13 @@ const styles = StyleSheet.create({
     height: 40,
     borderColor: 'gray',
     borderWidth: 1,
-    marginBottom: 15,
+    marginBottom: 10,
     paddingLeft: 10,
+    borderRadius: 5,
+  },
+  modalButtonContainer: {
+    flexDirection: "row",
+    marginTop: 15,
   },
   searchContainer: {
     marginTop: 20,
@@ -292,21 +317,33 @@ const styles = StyleSheet.create({
     borderColor: "gray",
     borderWidth: 1,
     padding: 10,
+    borderRadius: 5,
     marginRight: 10,
   },
   productList: {
     marginTop: 20,
-    width: "80%",
+    width: "90%",
   },
   productItem: {
-    padding: 10,
+    padding: 15,
     marginBottom: 10,
     backgroundColor: "#fff",
     borderRadius: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.1,
     shadowRadius: 3,
     elevation: 3,
   },
+  productText: {
+    fontSize: 16,
+    color: "#333",
+  },
+  noProductsText: {
+    fontSize: 16,
+    color: "#666",
+    textAlign: "center",
+    marginTop: 20,
+  },
 });
+

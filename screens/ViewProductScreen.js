@@ -23,7 +23,7 @@ export default function ViewProductScreen() {
         Alert.alert('Error', 'No se encontró el token');
         return;
       }
-
+  
       const response = await fetch('http://back-stockysh.vercel.app/user/getProductos', {
         method: 'GET',
         headers: {
@@ -31,13 +31,18 @@ export default function ViewProductScreen() {
           'auth': token,
         },
       });
-
+  
       const data = await response.json();
       if (data.success) {
-        // Verifica si data.productos es un arreglo
         if (Array.isArray(data.productos)) {
           // Filtrar productos para excluir aquellos con estado "pendiente"
-          const productosFiltrados = data.productos.filter(producto => producto.estado !== 'pendiente');
+          const productosFiltrados = data.productos
+            .filter(producto => producto.estado !== 'pendiente')
+            // Ordenar los productos por la fecha de actualización (updated_at) de forma descendente
+            .sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
+            // Tomar solo los primeros 10 productos después de ordenar
+            .slice(0, 10);
+  
           setProductos(productosFiltrados);
         } else {
           console.error("La respuesta no contiene productos válidos", data);
@@ -50,6 +55,7 @@ export default function ViewProductScreen() {
       Alert.alert('Error', `Error: ${error.message}`);
     }
   };
+  
 
   useEffect(() => {
     fetchProductos();
@@ -64,33 +70,53 @@ export default function ViewProductScreen() {
           keyExtractor={(item) => item.id_p.toString()} // Asumiendo que id_p es la clave única
           renderItem={({ item }) => (
             <View style={styles.productItem}>
-              <Text>Nombre: {item.nombre_producto}</Text>
-              <Text>Precio: {item.precio}</Text>
-              <Text>Stock: {item.stock}</Text>
+              <Text style={styles.productText}>Nombre: {item.nombre_producto}</Text>
+              <Text style={styles.productText}>Precio: ${item.precio}</Text>
+              <Text style={styles.productText}>Stock: {item.stock}</Text>
             </View>
           )}
         />
       ) : (
-        <Text>No hay productos disponibles.</Text>
+        <Text style={styles.noProductsText}>No hay productos disponibles.</Text>
       )}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#fff',
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  productItem: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-  },
-});
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      padding: 20,
+      backgroundColor: '#f2f2f2', // Fondo claro para hacer contraste
+      alignItems: 'center',
+    },
+    title: {
+      fontSize: 28,
+      fontWeight: 'bold',
+      color: '#4a90e2',
+      marginBottom: 20,
+      textAlign: 'center',
+    },
+    productItem: {
+      padding: 15,
+      marginBottom: 15,
+      backgroundColor: '#fff',
+      borderRadius: 10,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 3,
+      elevation: 3,
+      width: '100%',
+    },
+    productText: {
+      fontSize: 16,
+      color: "#333",
+      marginBottom: 5,
+    },
+    noProductsText: {
+      fontSize: 16,
+      color: "#666",
+      textAlign: "center",
+      marginTop: 20,
+    },
+  });

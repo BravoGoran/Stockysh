@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet,Alert } from 'react-native';
+import { View, Text, TextInput, Button,TouchableOpacity, StyleSheet,Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const API_URL = "http://back-stockysh.vercel.app"; // Cambia a tu URL de API real
@@ -74,20 +74,22 @@ export default function LoadProductScreen() {
       console.error("Error al crear el producto:", error);
     }
   };
-return(
-  <View style={styles.container}>
+  return (
+    <View style={styles.container}>
       <Text style={styles.title}>Cargar Producto</Text>
       <TextInput
         style={styles.input}
         placeholder="ID"
         value={id}
         onChangeText={setId}
+        placeholderTextColor="#aaa"
       />
       <TextInput
         style={styles.input}
         placeholder="Nombre"
         value={nombre}
         onChangeText={setNombre}
+        placeholderTextColor="#aaa"
       />
       <TextInput
         style={styles.input}
@@ -95,6 +97,7 @@ return(
         keyboardType="numeric"
         value={precio}
         onChangeText={setPrecio}
+        placeholderTextColor="#aaa"
       />
       <TextInput
         style={styles.input}
@@ -102,42 +105,66 @@ return(
         keyboardType="numeric"
         value={cantidad}
         onChangeText={setCantidad}
+        placeholderTextColor="#aaa"
       />
       <View style={styles.imageContainer}>
         <Text style={styles.imageText}>Imagen del Producto</Text>
       </View>
-      <Button title="ENVIAR" onPress={handleSubmit} color="red" />
+      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+        <Text style={styles.submitButtonText}>ENVIAR</Text>
+      </TouchableOpacity>
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#333",
+    backgroundColor: "#f2f2f2",
+    alignItems: "center",
   },
   title: {
-    fontSize: 24,
-    color: "white",
+    fontSize: 26,
+    color: "#4a90e2",
     textAlign: "center",
     marginBottom: 20,
+    fontWeight: "bold",
   },
   input: {
-    backgroundColor: "#fff",
-    borderRadius: 5,
+    width: "100%",
+    backgroundColor: "#d9eaf7", // Color de contenedor
+    borderRadius: 8,
+    padding: 12,
     marginBottom: 15,
-    padding: 10,
+    color: "#333",
+    fontSize: 16,
   },
   imageContainer: {
     width: "100%",
     height: 200,
-    backgroundColor: "#fff",
+    backgroundColor: "#d9eaf7", // Color de contenedor de imagen
+    borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 20,
   },
   imageText: {
     color: "#666",
+    fontSize: 16,
+  },
+  submitButton: {
+    backgroundColor: "#4a90e2",
+    borderRadius: 8,
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    marginTop: 20,
+    alignItems: "center",
+    width: "100%",
+  },
+  submitButtonText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
   },
 });
+  

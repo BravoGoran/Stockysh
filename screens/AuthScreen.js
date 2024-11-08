@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { View, TextInput, Button, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native'; // Importa useNavigation
 
@@ -106,10 +106,13 @@ export default function AuthScreen({ onLogin }) {
         </>
       )}
       <Button title={isLogin ? "Iniciar sesión" : "Registrarse"} onPress={handleAuth} />
-      <Button
-        title={`Cambiar a ${isLogin ? "Registro" : "Inicio de sesión"}`}
-        onPress={() => setIsLogin(!isLogin)}
-      />
+
+      <TouchableOpacity onPress={() => setIsLogin(!isLogin)}>
+        <Text style={styles.switchText}>
+          {isLogin ? "¿No tienes cuenta? " : "¿Ya tienes cuenta? "}
+          <Text style={styles.linkText}>{isLogin ? "Regístrate" : "Inicia sesión"}</Text>
+        </Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -126,5 +129,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 10,
     paddingLeft: 8,
+  },
+  switchText: {
+    textAlign: 'center',
+    marginTop: 10,
+  },
+  linkText: {
+    textDecorationLine: 'underline',
+    color: 'blue',
   },
 });
