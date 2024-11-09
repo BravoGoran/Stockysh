@@ -54,7 +54,7 @@ export default function EditProductScreen({ route, navigation }) {
         // Pasa un parámetro 'refresh' para forzar el refresco en la pantalla de inicio
         navigation.reset({
           index: 0,
-          routes: [{ name: 'Home' }],
+          routes: [{ name: 'HomeScreen' }],
         });
       } else {
         Alert.alert("Aviso", data.message);
@@ -96,7 +96,7 @@ export default function EditProductScreen({ route, navigation }) {
         // Redirigir o refrescar la pantalla después de eliminar el producto
         navigation.reset({
           index: 0,
-          routes: [{ name: 'Home' }],
+          routes: [{ name: 'HomeScreen' }],
         });
       } else {
         Alert.alert("Error", data.message);

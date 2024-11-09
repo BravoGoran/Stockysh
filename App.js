@@ -25,14 +25,14 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator>
         {/* Pantalla de Autenticación siempre visible */}
-        <Stack.Screen name="Auth">
+        <Stack.Screen name="AuthScreen">
           {(props) => <AuthScreen {...props} onLogin={handleLogin} />}
         </Stack.Screen>
 
         {/* Si está autenticado, muestra las otras pantallas */}
         {isAuthenticated && (
           <>
-            <Stack.Screen name="Home">
+            <Stack.Screen name="HomeScreen">
               {(props) => <HomeScreen {...props} rol={userRole} />}
             </Stack.Screen>
             <Stack.Screen name="EditProductScreen" component={EditProductScreen} />

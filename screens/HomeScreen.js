@@ -130,7 +130,7 @@ export default function HomeScreen() {
 
   const handleLogout = async () => {
     await AsyncStorage.removeItem('token');
-    navigation.navigate("Auth"); // Asegura la navegación a la pantalla de autenticación
+    navigation.navigate("AuthScreen"); // Asegura la navegación a la pantalla de autenticación
   };
   
   

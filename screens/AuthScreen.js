@@ -6,21 +6,21 @@ import { useNavigation } from '@react-navigation/native'; // Importa useNavigati
 export default function AuthScreen({ onLogin }) {
   const [nombre, setNombre] = useState(''); // Nombre del usuario
   const [dni, setDni] = useState(''); // DNI del usuario
-  const [password, setPassword] = useState('');
+  const [contra, setContra] = useState('');
   const [email, setEmail] = useState(''); // Email del usuario
   const [isLogin, setIsLogin] = useState(true);
 
   const navigation = useNavigation(); // Usa useNavigation para acceder al objeto de navegación
 
   const handleAuth = async () => {
-    const endpoint = isLogin ? 'http://back-stockysh.vercel.app/user/login' : 'http://back-stockysh.vercel.app/user/usersp';
-
+    const endpoint = isLogin ? 'https://back-stockysh.vercel.app/user/login' : 'https://back-stockysh.vercel.app/user/usersp';
     try {
+      
+      console.log("HEREEEE: ", endpoint);
       const body = isLogin
-        ? { dni, contra: password }
-        : { nombre, dni, contra: password, email }; // En el registro, incluimos todos los campos
-
-      const response = await fetch(endpoint, {
+        ? { dni, contra }
+        : { nombre, dni, contra, email }; // En el registro, incluimos todos los campos
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -28,7 +28,7 @@ export default function AuthScreen({ onLogin }) {
         body: JSON.stringify(body),
       });
 
-      const data = await response.json();
+      const data = await res.json();
 
       if (data.success) {
         console.log("Token:", data.token); // Verifica el token recibido
@@ -49,7 +49,7 @@ export default function AuthScreen({ onLogin }) {
         onLogin(data.rol); // Cambia a la pantalla principal
 
         // Navegar a la pantalla Home después de un login exitoso
-        navigation.navigate('Home');
+        navigation.navigate('HomeScreen');
       } else {
         alert(`Error: ${data.message}`);
       }
@@ -70,8 +70,8 @@ export default function AuthScreen({ onLogin }) {
           />
           <TextInput
             placeholder="Contraseña"
-            value={password}
-            onChangeText={setPassword}
+            value={contra}
+            onChangeText={setContra}
             secureTextEntry
             style={styles.input}
           />
@@ -92,8 +92,8 @@ export default function AuthScreen({ onLogin }) {
           />
           <TextInput
             placeholder="Contraseña"
-            value={password}
-            onChangeText={setPassword}
+            value={contra}
+            onChangeText={setContra}
             secureTextEntry
             style={styles.input}
           />
